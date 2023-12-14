@@ -4,6 +4,7 @@ import './search.css'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 function Searchbar() {
     const[textt,settextt]=useState()
+    const[istext,setistext]=useState(true)
     var prompt=""
     const API_KEY='AIzaSyAkVSK5X73IXCmhzBDJAnm66EC3nUQxVH8'
     // const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -19,10 +20,14 @@ function Searchbar() {
     
       const result = await model.generateContent(prompt);
       const response = await result.response;
-      const text = response.text();
+      var text = response.text();
       console.log(response.candidates[0].content.parts[0].text);
-
+      
       settextt(response.candidates[0].content.parts[0].text);
+      if(text?.length>1){
+        setistext(true)
+      }
+       
     // settextt(response.text())
     //   console.log(text);
     }
@@ -36,6 +41,8 @@ function Searchbar() {
     const handleSearchArray=(e)=>{
         e.preventDefault()
        prompt=searchtags
+       settextt()
+       setistext(false)
        run();
 
         
@@ -52,16 +59,23 @@ function Searchbar() {
     // }
 
   return (
-    <div className='fullbackground d-flex flex-column bg-dark justify-content-center  w-100' style={{height:'100vh'}}>
+    <div className='fullbackground d-flex flex-column justify-content-center  w-100 ' style={{height:'100vh',backgroundColor:'#16191E'}}>
         <div className='d-flex justify-content-center' style={{marginTop:'150px'}}>
         <div className='d-flex justify-content-center' style={{width:'600px'}}>
         <input placeholder='Search Here' type="text" className='form-control '  onChange={e=>setSearchtags(e.target.value)}/>
-        <button className='btn btn-outline-info ms-3' onClick={e=>handleSearchArray(e)}><i className="fa-solid fa-magnifying-glass text-light" ></i></button>
+        <button className='btn btn-outline-light ms-3'  onClick={e=>handleSearchArray(e)}><i className="fa-solid fa-magnifying-glass text-info" ></i></button>
         </div>
        
         </div>
-        <div className='d-flex mt-5 justify-content-center '>
-        <div className='bg-light text-center' style={{width:'600px',height:'450px',overflow:'auto'}}> <p className='mt-5'>{textt}</p></div>
+        <div className='d-flex mt-5 justify-content-center'>
+        <div className='bg-dark text-center p-5 rounded justify-content-center d-flex' style={{width:'600px',height:'450px',overflow:'auto'}}><p className=' text-light'>{textt}</p>
+        
+       { !istext&& <div className="text-light d-flex justify-content-center align-items-center w-100" style={{height:'100%'}}>
+        <div className='loader'></div>
+       </div>
+       
+       }
+        </div>
         </div>
     </div>
   )
